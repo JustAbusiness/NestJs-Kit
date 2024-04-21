@@ -1,3 +1,4 @@
+import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,10 +17,14 @@ export class UsersService {
     return hash;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async create(email: string, password: string, name: string) {
-    const hash = this.getHashPassword(password);
-    const user = await this.userModel.create({ email, password: hash, name });
+  async create(createUserDto: CreateUserDto) {
+    const hash = this.getHashPassword(createUserDto.password);
+    const user = await this.userModel.create({
+      email: createUserDto.email,
+      password: hash,
+      name: createUserDto.name,
+      address: createUserDto.address,
+    });
     return user;
   }
 

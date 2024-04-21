@@ -20,7 +20,7 @@ export class User {
   @Prop()
   age: number;
 
-  @Prop()
+  @Prop({ required: true })
   address: string;
 
   @Prop()
