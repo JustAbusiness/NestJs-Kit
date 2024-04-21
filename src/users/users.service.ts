@@ -36,9 +36,13 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id)) return `User not found : ${id}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(updateUserDto: UpdateUserDto) {
+    return await this.userModel.updateOne(
+      {
+        _id: updateUserDto._id,
+      },
+      { ...UpdateUserDto },
+    );
   }
 
   remove(id: number) {
