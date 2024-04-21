@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync } from 'bcryptjs';
 
 @Injectable()
@@ -32,8 +32,8 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return `User not found : ${id}`;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
