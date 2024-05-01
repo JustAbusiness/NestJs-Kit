@@ -25,7 +25,7 @@ export class CompaniesService {
   }
 
   async findAll(currentPage: string, limit: string, qs: string) {
-    const { filter, skip, sort, population } = aqp(qs);
+    const { filter, sort, population } = aqp(qs);
     delete filter.page;
     delete filter.limit;
     const offset = (+currentPage - 1) * +limit;
@@ -38,8 +38,7 @@ export class CompaniesService {
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
-      // @ts-expect-error
-      .sort(sort)
+      .sort(sort as any)
       .populate(population)
       .exec();
 
