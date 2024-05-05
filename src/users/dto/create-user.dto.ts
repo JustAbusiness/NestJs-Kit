@@ -60,6 +60,7 @@ export class CreateUserDto {
   @ValidateNested()
   @Type(() => Company)
   company!: Company;
+  // private _id: any | ObjectId;
 }
 
 export class RegisterUserDto {
