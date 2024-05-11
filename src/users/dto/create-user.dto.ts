@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
@@ -52,6 +53,7 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: 'Vai trò không để trống',
   })
+  @IsMongoId({ message: 'Role có định dạng là mongo id' })
   role: string;
 
   // Validate Object

@@ -102,11 +102,14 @@ export class UsersService {
       .findOne({
         _id: id,
       })
+      .populate({ path: 'role', select: { _id: 1, name: 1 } })
       .select('-password');
   }
 
   findOneByUserName(username: string) {
-    return this.userModel.findOne({ email: username });
+    return this.userModel
+      .findOne({ email: username })
+      .populate({ path: 'role', select: { permission: 1, name: 1 } });
   }
 
   isValidPassword(password: string, hash: string) {
@@ -129,6 +132,13 @@ export class UsersService {
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) return `User not found : ${id}`;
+
+    // found user
+    const foundUser = await this.userModel.findById(id);
+    if (foundUser.email === 'admin@gmail.com') {
+      throw new BadRequestException('You can not delete this email');
+    }
+
     await this.userModel.updateOne(
       { _id: id },
       {

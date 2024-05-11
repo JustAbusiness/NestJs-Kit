@@ -81,7 +81,7 @@ export class RolesService {
     }
     return (await this.roleModel.findById(id)).populate({
       path: 'permissions',
-      select: { _id: 1, apiPath: 1, method: 1 },
+      select: { _id: 1, apiPath: 1, method: 1, module: 1 },
     });
   }
 
@@ -97,10 +97,10 @@ export class RolesService {
 
     const { name, description, isActive, permissions } = updateRoleDto;
 
-    const isExit = await this.roleModel.findOne({ name });
-    if (isExit) {
-      throw new BadRequestException('Role is already exist');
-    }
+    // const isExit = await this.roleModel.findOne({ name });
+    // if (isExit) {
+    //   throw new BadRequestException('Role is already exist');
+    // }
 
     const updated = await this.roleModel.updateOne(
       { _id: id },
@@ -119,6 +119,10 @@ export class RolesService {
   }
 
   async remove(id: string, user: IUser) {
+    const foundRole = await this.roleModel.findById(id);
+    if (foundRole.name === 'ADMIN') {
+      throw new BadRequestException('You can not delete role ADMIN');
+    }
     await this.roleModel.updateOne(
       { _id: id },
       {
