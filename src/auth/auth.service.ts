@@ -126,5 +126,5 @@ export class AuthService {
     await this.usersService.updateUserToken('', user._id);
     response.clearCookie('refresh_token');
     return 'ok';
-  }
+  };
 }
