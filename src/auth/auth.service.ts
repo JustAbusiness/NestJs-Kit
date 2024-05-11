@@ -76,11 +76,45 @@ export class AuthService {
     return refreshToken;
   };
 
-  processNewToken = (refreshToken: string) => {
+  processNewToken = async (refreshToken: string, response: Response) => {
     try {
       this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
+
+      const user = await this.usersService.findUserByToken(refreshToken);
+      if (user) {
+        const { _id, name, email, role } = user;
+        const payload = {
+          sub: 'token refresh',
+          iss: 'from server',
+          _id,
+          name,
+          email,
+          role,
+        };
+        const refreshToken = this.createRefreshToken(payload);
+
+        // Update user with refresh token
+        await this.usersService.updateUserToken(_id.toString(), refreshToken);
+        // set refresh token as cookie
+        response.clearCookie('refresh_token');
+        response.cookie('refresh_token', refreshToken, {
+          httpOnly: true,
+          maxAge: ms(this.configService.get<string>('JWT_EXPIRED_TOKEN')),
+        });
+        return {
+          token: this.jwtService.sign(payload),
+          user: {
+            _id,
+            name,
+            email,
+            role,
+          },
+        };
+      } else {
+        throw new BadGatewayException('Refresh token hợp lệ');
+      }
     } catch (error) {
       throw new BadGatewayException(
         'Refresh token không hợp lệ, vui lòng đăng nhập lại',
