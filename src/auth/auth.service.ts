@@ -17,12 +17,15 @@ export class AuthService {
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByUserName(username);
     if (user) {
-      const isValidPassword = this.usersService.isValidPassword(
-        pass,
-        user.password,
-      );
-      if (isValidPassword === true) {
-        return user;
+      const isValid = this.usersService.isValidPassword(pass, user.password);
+      if (isValid === true) {
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.usersService.findOne(userRole._id);
+        const objUser = {
+          ...user.toObject(),
+          permissions: temp?.permissions ?? [],
+        };
+        return objUser;
       }
     }
 
